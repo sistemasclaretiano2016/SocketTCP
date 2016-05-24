@@ -44,36 +44,62 @@ namespace TCPServer
             TcpListener server = new TcpListener(IPAddress.Loopback, porta);
             server.Start();
 
-            Console.WriteLine("aguardando alguma conexao...");
+            string ip = string.Empty;
 
-            TcpClient client = server.AcceptTcpClient();
-
-            string ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
-
-            Console.WriteLine("conexão estabelecida com {0}", ip);
-
-            NetworkStream ns = client.GetStream();
-
-            StreamReader reader = new StreamReader(ns);
-            StreamWriter writer = new StreamWriter(ns);
-            writer.AutoFlush = true;
-
-            string line = string.Empty;
-            string lineUpper = string.Empty;
-
-            while (true)
+            try
             {
-                try
+                while (true)
                 {
-                    line = reader.ReadLine();
-                    lineUpper = line.ToUpper();
+                    Console.Clear();
+                    Console.WriteLine(string.Format("Porta local: {0}", porta));
+                    if (!string.IsNullOrEmpty(ip))
+                        Console.WriteLine("ultima conexão finalizada de {0}", ip);
+                    Console.WriteLine("aguardando alguma conexao...");
 
-                    writer.WriteLine(lineUpper);
+                    TcpClient client = server.AcceptTcpClient();
 
-                    Console.WriteLine("{0}: {1}", ip, lineUpper);
+                    ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+
+                    Console.WriteLine("conexão estabelecida com {0}", ip);
+
+                    NetworkStream ns = client.GetStream();
+
+                    StreamReader reader = new StreamReader(ns);
+                    StreamWriter writer = new StreamWriter(ns);
+                    writer.AutoFlush = true;
+
+                    string line = string.Empty;
+                    string lineUpper = string.Empty;
+
+                    while (true)
+                    {
+                        try
+                        {
+                            line = reader.ReadLine();
+                            lineUpper = line.ToUpper();
+
+                            writer.WriteLine(lineUpper);
+
+                            Console.WriteLine("{0}: {1}", ip, lineUpper);
+                        }
+                        catch (IOException ex)
+                        {
+                            break;
+                        }
+                        catch (Exception ex)
+                        { }
+                    }
                 }
-                catch { }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Servidor finalizado, erro: {0}", ex.Message);
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine("Servidor finalizado.");
+            Console.ReadKey();
         }
     }
 }

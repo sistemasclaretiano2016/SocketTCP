@@ -21,7 +21,7 @@ namespace TCPClient
 
                 ipDoServidor = Console.ReadLine();
 
-                if (!IsIPv4(ipDoServidor))
+                if (ipDoServidor != "localhost" &&  !IsIPv4(ipDoServidor))
                 {
                     Console.Write("\n\nIP Inválido...");
                     Console.ReadKey();
