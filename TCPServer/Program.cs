@@ -70,17 +70,30 @@ namespace TCPServer
 
                     string line = string.Empty;
                     string lineUpper = string.Empty;
+                    string resultado = string.Empty;
 
                     while (true)
                     {
                         try
                         {
                             line = reader.ReadLine();
-                            lineUpper = line.ToUpper();
 
-                            writer.WriteLine(lineUpper);
+                            if (ApenasNumeros(line))
+                            {
+                                resultado = (Convert.ToInt64(line) * Convert.ToInt64(line)).ToString();
 
-                            Console.WriteLine("{0}: {1}", ip, lineUpper);
+                                writer.WriteLine("{0} ao quadrado = {1}", line, resultado);
+
+                                Console.WriteLine("{0}: {1} ao quadrado = {2}", ip, line, resultado);
+                            }
+                            else
+                            {
+                                lineUpper = line.ToUpper();
+
+                                writer.WriteLine(lineUpper);
+
+                                Console.WriteLine("{0}: {1}", ip, lineUpper);
+                            }
                         }
                         catch (IOException ex)
                         {
@@ -100,6 +113,20 @@ namespace TCPServer
 
             Console.WriteLine("Servidor finalizado.");
             Console.ReadKey();
+        }
+
+        static bool ApenasNumeros(string texto)
+        {
+            bool apenasNumeros = texto.Length > 0;
+            foreach (char c in texto.ToCharArray())
+            {
+                if (!char.IsDigit(c))
+                {
+                    apenasNumeros = false;
+                    break;
+                }
+            }
+            return apenasNumeros;
         }
     }
 }
